@@ -1,8 +1,19 @@
-# React + Vite
+# React + Vite + Tauri
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Tetris is a classic arcade game where the player controls falling
+tetrominoes (geometric shapes) made up of four square blocks. The
+objective of the game is to fill horizontal lines on the game field
+without leaving any empty spaces. When a line is completely filled,
+it disappears, and the player earns points. The controls are as
+follows: the arrow keys left and right move the tetromino, the down
+arrow speeds up its fall, the spacebar rotates the shape, and the up
+arrow pauses the game.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This Tetris game was created by a passionate developer interested in
+web development and game design. It is built using JavaScript,
+React, HTML, and CSS to create an interactive and responsive user
+interface. Tauri was used to package the game, allowing it to be
+compiled into a native Windows executable, in addition to being
+deployable as a web application. This makes the game versatile, as
+it can be accessed through a browser or run offline as a standalone
+app.
