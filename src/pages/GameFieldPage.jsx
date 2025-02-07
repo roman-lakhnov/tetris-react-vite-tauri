@@ -24,6 +24,8 @@ const GameFieldPage = () => {
 	const [level, setLevel] = useState(1)
 	const [speed, setSpeed] = useState(48)
 
+	//TODO кнопка назад. правила. конец игры.
+
 	// useEffect для размещения блока на поле
 	useEffect(() => {
 		// console.log('Блок активен, - размещаем...')
