@@ -57,7 +57,7 @@ const AboutPage = () => {
 							fontFamily: 'cursive',
 							fontSize: '20px'
 						}}
-						href='https://github.com/roman-lakhnov'
+						href='https://github.com/roman-lakhnov/tetris-react-vite-tauri'
 						target='_blank'
 						rel='noopener noreferrer'
 						className='btn btn-dark w-100'
