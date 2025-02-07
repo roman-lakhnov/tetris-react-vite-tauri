@@ -9,40 +9,46 @@ import {
 	placeBlockOnField,
 	removeBlockFromField
 } from '../utils'
+import BackToMenuBtn from '../components/backToMenuBtn'
+import Header from '../components/Header'
+import { grey, midnight } from '../constants'
 const GameFieldPage = () => {
 	const [field, setField] = useState(createField())
 	const clearFieldRef = useRef(createField())
-	const startX = 4 // Центр по горизонтали
-	const startY = 0 // В верхней части
+	const startX = 4
+	const startY = 0
 	const [block, setBlock] = useState({
 		point: { x: startX, y: startY },
 		shape: generateBlock()
 	})
 	const blockInUse = useRef(false)
 	const pauseRef = useRef(false)
+	const gameRef = useRef(true)
 	const [score, setScore] = useState(0)
 	const [level, setLevel] = useState(1)
 	const [speed, setSpeed] = useState(48)
 
-	//TODO кнопка назад. правила. конец игры.
-
-	// useEffect для размещения блока на поле
 	useEffect(() => {
-		// console.log('Блок активен, - размещаем...')
-		// Используем setField для обновления состояния поля
-		clearFieldRef.current = placeBlockOnField(
-			clearFieldRef.current,
-			block.shape,
-			block.point
-		)
-		setField(clearFieldRef.current)
-		// console.log('Блок размещен!')
+		if (blockInUse.current || pauseRef.current || !gameRef.current) return
+		blockInUse.current = true
+		if (canPlaceBlock(clearFieldRef.current, block.shape, block.point)) {
+			clearFieldRef.current = placeBlockOnField(
+				clearFieldRef.current,
+				block.shape,
+				block.point
+			)
+			setField(clearFieldRef.current)
+		} else {
+			gameRef.current = false
+			toast.clearWaitingQueue()
+			toast.dismiss()
+			toast(`Game over!`)
+		}
+		blockInUse.current = false
 	}, [block])
-
-	// //каждую секунду координата блока смещаеться на 1 по вертикали
 	useEffect(() => {
 		const interval = setInterval(() => {
-			if (blockInUse.current || pauseRef.current) return
+			if (blockInUse.current || pauseRef.current || !gameRef.current) return
 			blockInUse.current = true
 			setBlock(prev => {
 				let newX = prev.point.x
@@ -55,26 +61,22 @@ const GameFieldPage = () => {
 					prev.point
 				)
 				if (canPlaceBlock(clearFieldRef.current, prev.shape, newXY)) {
-					// console.log('блок можно двигать вниз')
 					return {
 						point: newXY,
 						shape: prev.shape
 					}
 				} else {
-					// console.log('блок нельзя двигать вниз')
 					clearFieldRef.current = placeBlockOnField(
 						clearFieldRef.current,
 						prev.shape,
 						prev.point
 					)
-					// console.log('блок стал частью поля')
 					clearFieldRef.current = checkField(
 						clearFieldRef.current,
 						setScore,
 						setLevel,
 						setSpeed
 					)
-					// console.log('Нет активного блока. Генерируем новый блок...')
 					return {
 						point: { x: startX, y: startY },
 						shape: generateBlock()
@@ -82,15 +84,12 @@ const GameFieldPage = () => {
 				}
 			})
 			blockInUse.current = false
-			// 	//TODO потом когда-то установить нормальное скалирование скорости.
-			// }
 		}, (speed / 60) * 1000)
 		return () => clearInterval(interval)
 	}, [speed])
-
-	// Обрабатываем нажатие клавиш
 	useEffect(() => {
 		const handleKeyDown = event => {
+			if (!gameRef.current) return
 			if (event.key === 'ArrowLeft') handleBlockAction('move', 'left')
 			if (event.key === 'ArrowRight') handleBlockAction('move', 'right')
 			if (event.key === 'ArrowUp') pauseGame()
@@ -116,13 +115,11 @@ const GameFieldPage = () => {
 		let newPoint = { ...block.point }
 
 		if (action === 'move') {
-			// Двигаем блок в зависимости от направления
 			if (direction === 'left') newPoint.x -= 1
 			if (direction === 'right') newPoint.x += 1
 			// if (direction === 'up') newPoint.y -= 1
 			if (direction === 'down') newPoint.y += 1
 		} else if (action === 'rotate') {
-			// Поворачиваем блок
 			const size = block.shape.length
 			newShape = Array.from({ length: size }, () => Array(size).fill(0))
 			for (let i = 0; i < size; i++) {
@@ -131,17 +128,12 @@ const GameFieldPage = () => {
 				}
 			}
 		}
-
-		// Удаляем текущий блок с поля
 		clearFieldRef.current = removeBlockFromField(
 			clearFieldRef.current,
 			block.shape,
 			block.point
 		)
-
-		// Проверяем, можно ли разместить блок после действия
 		if (canPlaceBlock(clearFieldRef.current, newShape, newPoint)) {
-			// Если можно, обновляем блок
 			setBlock({
 				shape: newShape,
 				point: newPoint
@@ -160,90 +152,20 @@ const GameFieldPage = () => {
 				height: '100vh'
 			}}
 		>
-			<div className='d-flex gap-3  mt-1 mb-1'>
-				<div>
-					<p
-						className='m-0'
-						style={{
-							color: 'white',
-							fontFamily: "'Press Start 2P', cursive",
-							fontSize: '22px',
-							textShadow: '1px 1px 2px black'
-						}}
-					>
-						Level: {level}
-					</p>
-				</div>
-				<div>
-					<p
-						className='m-0'
-						style={{
-							color: 'white',
-							fontFamily: "'Press Start 2P', cursive",
-							fontSize: '22px',
-							textShadow: '1px 1px 2px black'
-						}}
-					>
-						Score: {score}
-					</p>
-				</div>
-				<div>
-					<p
-						className='m-0'
-						style={{
-							color: 'white',
-							fontFamily: "'Press Start 2P', cursive",
-							fontSize: '22px',
-							textShadow: '1px 1px 2px black'
-						}}
-					>
-						Speed: {speed}
-					</p>
-				</div>
-
-				{/* <div style={{ marginTop: '20px' }}>
-							<button
-								onClick={() => handleBlockAction('up')}
-								style={{ margin: '5px' }}
-							>
-								⬆ Up
-							</button>
-							<div>
-								<button
-									onClick={() => handleBlockAction('left')}
-									style={{ margin: '5px' }}
-								>
-									⬅ Left
-								</button>
-								<button
-									onClick={() => handleBlockAction('right')}
-									style={{ margin: '5px' }}
-								>
-									➡ Right
-								</button>
-							</div>
-							<button
-								onClick={() => handleBlockAction('down')}
-								style={{ margin: '5px' }}
-							>
-								⬇ Down
-							</button>
-						</div> */}
-			</div>
+			<BackToMenuBtn />
+			<Header score={score} speed={speed} level={level} />
 			<div
-				className='mb-2'
 				style={{
 					height: '100%',
 					aspectRatio: '1 / 2',
-					border: '5px solid #717874', // Рамка вокруг таблицы
-					borderRadius: '5px' // Скругленные углы для ячеек
+					border: `5px solid ${grey}`,
+					borderRadius: '5px'
 				}}
 			>
 				<table
 					style={{
 						tableLayout: 'fixed',
 						height: '100%',
-						borderCollapse: 'collapse',
 						aspectRatio: '1 / 2'
 					}}
 				>
@@ -255,12 +177,11 @@ const GameFieldPage = () => {
 										key={cellIndex}
 										style={{
 											width: '10%',
-											height: `${100 / field.length}%`,
+											height: `5%`,
 											backgroundImage:
 												cell === 0 ? `url("block/0.jpg")` : getColor(cell),
-											border: '9px solid #02041d',
+											border: `9px solid ${midnight}`,
 											backgroundSize: '100% 100%'
-											// backgroundPosition: 'center',
 										}}
 									/>
 								))}
