@@ -17,3 +17,5 @@ compiled into a native Windows executable, in addition to being
 deployable as a web application. This makes the game versatile, as
 it can be accessed through a browser or run offline as a standalone
 app.
+<img width="835" height="655" alt="Screenshot_1" src="https://github.com/user-attachments/assets/b6adf393-636e-4607-aedc-a3b7c90707f2" />
+<img width="838" height="660" alt="Screenshot_2" src="https://github.com/user-attachments/assets/0979ab05-c32e-4e4e-8f06-c75fa4439fe9" />
